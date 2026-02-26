@@ -5,110 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rumah Kata</title>
     <style>
-        :root {
-            --green: #6aaa64;
-            --yellow: #c9b458;
-            --gray: #787c7e;
-            --border: #d3d6da;
-            --black: #1a1a1b;
-        }
-
+        :root { --green: #6aaa64; --yellow: #c9b458; --gray: #787c7e; --border: #d3d6da; }
         body { 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            display: flex; flex-direction: column; align-items: center; 
-            background-color: #ffffff; color: var(--black); margin: 0; 
-            height: 100vh; overflow: hidden;
+            font-family: sans-serif; display: flex; flex-direction: column; 
+            align-items: center; background: white; margin: 0; padding-top: 20px;
+            user-select: none; /* Biar gak keganggu seleksi teks */
         }
-
-        h1 { margin: 10px 0 5px 0; letter-spacing: 1px; font-size: 1.8rem; }
-        hr { width: 100%; border: 0; border-top: 1px solid var(--border); margin-bottom: 20px; }
-        
-        /* Grid Game */
-        #game-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        #grid { display: grid; grid-template-rows: repeat(6, 1fr); grid-gap: 5px; margin-bottom: 20px; }
+        h1 { margin-bottom: 20px; letter-spacing: 2px; }
+        #grid { display: grid; grid-template-rows: repeat(6, 1fr); grid-gap: 5px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); grid-gap: 5px; }
-        
         .tile { 
-            width: 50px; height: 50px; border: 2px solid var(--border); 
+            width: 60px; height: 60px; border: 2px solid var(--border); 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 1.5rem; font-weight: bold; text-transform: uppercase; 
+            font-size: 2rem; font-weight: bold; text-transform: uppercase; 
         }
+        .correct { background: var(--green); border-color: var(--green); color: white; }
+        .present { background: var(--yellow); border-color: var(--yellow); color: white; }
+        .absent { background: var(--gray); border-color: var(--gray); color: white; }
         
-        .correct { background-color: var(--green); border-color: var(--green); color: white; }
-        .present { background-color: var(--yellow); border-color: var(--yellow); color: white; }
-        .absent { background-color: var(--gray); border-color: var(--gray); color: white; }
-        .tapped { border-color: #878a8c; color: black; }
-
-        /* Virtual Keyboard */
-        #keyboard { width: 100%; max-width: 500px; padding: 10px; box-sizing: border-box; }
-        .kb-row { display: flex; justify-content: center; margin-bottom: 8px; touch-action: manipulation; }
-        .key { 
-            background-color: #d3d6da; border: 0; border-radius: 4px; 
-            margin: 0 3px; padding: 0; height: 58px; flex: 1;
-            font-weight: bold; cursor: pointer; display: flex; align-items: center; 
-            justify-content: center; text-transform: uppercase; -webkit-tap-highlight-color: transparent;
-        }
-        .key.large { flex: 1.5; font-size: 0.8rem; }
-
-        #message { font-weight: bold; text-align: center; height: 20px; margin-bottom: 10px; }
-        .btn-reset { padding: 8px 15px; cursor: pointer; border: none; background: var(--black); color: white; border-radius: 4px; margin-bottom: 10px; }
-
-        @media (max-width: 380px) {
-            .tile { width: 45px; height: 45px; font-size: 1.2rem; }
-            .key { height: 50px; margin: 0 2px; }
-        }
+        /* Input tersembunyi agar keyboard muncul */
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
+        #message { margin-top: 20px; font-weight: bold; min-height: 1.5rem; }
+        .btn { margin-top: 10px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
-<body>
+<body onclick="focusInput()">
 
     <h1>RUMAH KATA</h1>
-    <hr>
     
-    <div id="game-container">
-        <div id="grid"></div>
-        <p id="message"></p>
-        <div style="text-align: center;">
-            <button id="reset-btn" class="btn-reset" style="display:none" onclick="location.reload()">Main Lagi</button>
-        </div>
-    </div>
+    <input type="text" id="hidden-input" maxlength="5" autocomplete="off" autofocus>
 
-    <div id="keyboard">
-        <div class="kb-row">
-            <button class="key" data-key="Q">Q</button><button class="key" data-key="W">W</button>
-            <button class="key" data-key="E">E</button><button class="key" data-key="R">R</button>
-            <button class="key" data-key="T">T</button><button class="key" data-key="Y">Y</button>
-            <button class="key" data-key="U">U</button><button class="key" data-key="I">I</button>
-            <button class="key" data-key="O">O</button><button class="key" data-key="P">P</button>
-        </div>
-        <div class="kb-row">
-            <button class="key" data-key="A">A</button><button class="key" data-key="S">S</button>
-            <button class="key" data-key="D">D</button><button class="key" data-key="F">F</button>
-            <button class="key" data-key="G">G</button><button class="key" data-key="H">H</button>
-            <button class="key" data-key="J">J</button><button class="key" data-key="K">K</button>
-            <button class="key" data-key="L">L</button>
-        </div>
-        <div class="kb-row">
-            <button class="key large" data-key="ENTER">ENTER</button>
-            <button class="key" data-key="Z">Z</button><button class="key" data-key="X">X</button>
-            <button class="key" data-key="C">C</button><button class="key" data-key="V">V</button>
-            <button class="key" data-key="B">B</button><button class="key" data-key="N">N</button>
-            <button class="key" data-key="M">M</button>
-            <button class="key large" data-key="BACKSPACE">⌫</button>
-        </div>
-    </div>
+    <div id="grid"></div>
+    <p id="message"></p>
+    <button class="btn" onclick="location.reload()">Main Lagi</button>
 
     <script>
-        const WORD_LIST = ["INDAH", "KAHIM", "KEREN", "SEKRE", "RUMAH"];
-        const ANSWER = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
-        const MAX_ATTEMPTS = 6;
-        
+        const WORDS = ["INDAH", "KAHIM", "KEREN", "SEKRE", "RUMAH"];
+        const ANSWER = WORDS[Math.floor(Math.random() * WORDS.length)];
+        const input = document.getElementById('hidden-input');
         let currentAttempt = 0;
-        let currentGuess = "";
         let isGameOver = false;
 
-        // Inisialisasi Grid
-        const grid = document.getElementById('grid');
-        for (let i = 0; i < MAX_ATTEMPTS; i++) {
+        // Buat Grid
+        for (let i = 0; i < 6; i++) {
             const row = document.createElement('div');
             row.className = 'row';
             for (let j = 0; j < 5; j++) {
@@ -117,105 +56,66 @@
                 tile.id = `tile-${i}-${j}`;
                 row.appendChild(tile);
             }
-            grid.appendChild(row);
+            document.getElementById('grid').appendChild(row);
         }
 
-        // Event Listener Keyboard Fisik
-        document.addEventListener('keydown', (e) => handleInput(e.key.toUpperCase()));
+        // Fokuskan input terus menerus
+        function focusInput() { if (!isGameOver) input.focus(); }
+        window.onload = focusInput;
 
-        // Event Listener Keyboard Virtual
-        document.querySelectorAll('.key').forEach(button => {
-            button.addEventListener('click', () => handleInput(button.dataset.key));
-        });
-
-        function handleInput(key) {
+        input.addEventListener('input', () => {
             if (isGameOver) return;
-
-            if (key === 'ENTER') {
-                if (currentGuess.length === 5) checkGuess();
-            } else if (key === 'BACKSPACE' || key === 'BACK') {
-                currentGuess = currentGuess.slice(0, -1);
-                updateGrid();
-            } else if (currentGuess.length < 5 && /^[A-Z]$/.test(key)) {
-                currentGuess += key;
-                updateGrid();
-            }
-        }
-
-        function updateGrid() {
+            const val = input.value.toUpperCase();
+            // Update tampilan grid berdasarkan apa yang diketik di input tersembunyi
             for (let i = 0; i < 5; i++) {
                 const tile = document.getElementById(`tile-${currentAttempt}-${i}`);
-                tile.innerText = currentGuess[i] || "";
-                tile.className = currentGuess[i] ? 'tile tapped' : 'tile';
+                tile.innerText = val[i] || "";
             }
-        }
+        });
 
-        function checkGuess() {
-            const rowTiles = [];
-            for (let i = 0; i < 5; i++) {
-                rowTiles.push(document.getElementById(`tile-${currentAttempt}-${i}`));
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && input.value.length === 5) {
+                checkGuess(input.value.toUpperCase());
+                input.value = "";
             }
+        });
+
+        function checkGuess(guess) {
+            const rowTiles = [];
+            for (let i = 0; i < 5; i++) rowTiles.push(document.getElementById(`tile-${currentAttempt}-${i}`));
 
             let tempAnswer = ANSWER.split('');
-            let guessArr = currentGuess.split('');
             let statuses = new Array(5).fill('absent');
 
-            guessArr.forEach((char, i) => {
+            // Cek Hijau
+            guess.split('').forEach((char, i) => {
                 if (char === ANSWER[i]) {
                     statuses[i] = 'correct';
                     tempAnswer[i] = null;
                 }
             });
 
-            guessArr.forEach((char, i) => {
+            // Cek Kuning
+            guess.split('').forEach((char, i) => {
                 if (statuses[i] !== 'correct' && tempAnswer.includes(char)) {
                     statuses[i] = 'present';
                     tempAnswer[tempAnswer.indexOf(char)] = null;
                 }
             });
 
-            statuses.forEach((status, i) => {
-                rowTiles[i].classList.add(status);
-                // Update warna keyboard virtual
-                updateKeyColor(guessArr[i], status);
-            });
+            // Update Warna
+            statuses.forEach((status, i) => rowTiles[i].classList.add(status));
 
-            if (currentGuess === ANSWER) {
-                showMessage("Indah banget! Selamat, kamu berhasil menebak kata!");
-                endGame();
+            if (guess === ANSWER) {
+                document.getElementById('message').innerText = "Indah banget! Selamat, kamu berhasil menebak kata!";
+                isGameOver = true;
             } else {
                 currentAttempt++;
-                currentGuess = "";
-                if (currentAttempt === MAX_ATTEMPTS) {
-                    showMessage(`Hey, it's okay! Refresh dan main lagi ya. Tadi jawabannya: ${ANSWER}`);
-                    endGame();
+                if (currentAttempt === 6) {
+                    document.getElementById('message').innerText = `Hey, it's okay! Refresh dan main lagi ya. Tadi jawabannya: ${ANSWER}`;
+                    isGameOver = true;
                 }
             }
-        }
-
-        function updateKeyColor(char, status) {
-            const keyBtn = document.querySelector(`.key[data-key="${char}"]`);
-            if (!keyBtn) return;
-            
-            if (status === 'correct') {
-                keyBtn.style.backgroundColor = 'var(--green)';
-                keyBtn.style.color = 'white';
-            } else if (status === 'present' && !keyBtn.classList.contains('correct')) {
-                keyBtn.style.backgroundColor = 'var(--yellow)';
-                keyBtn.style.color = 'white';
-            } else if (status === 'absent' && !keyBtn.classList.contains('correct') && !keyBtn.classList.contains('present')) {
-                keyBtn.style.backgroundColor = 'var(--gray)';
-                keyBtn.style.color = 'white';
-            }
-        }
-
-        function showMessage(msg) {
-            document.getElementById('message').innerText = msg;
-        }
-
-        function endGame() {
-            isGameOver = true;
-            document.getElementById('reset-btn').style.display = 'inline-block';
         }
     </script>
 </body>
