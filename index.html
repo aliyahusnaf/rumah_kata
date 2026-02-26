@@ -5,41 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rumah Kata</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; flex-direction: column; align-items: center; 
-            background-color: #ffffff; color: #1a1a1b; margin: 0; padding-top: 30px;
+        :root {
+            --green: #6aaa64;
+            --yellow: #c9b458;
+            --gray: #787c7e;
+            --border: #d3d6da;
+            --black: #1a1a1b;
         }
-        h1 { margin-bottom: 5px; letter-spacing: 2px; color: #333; }
-        hr { width: 100%; max-width: 400px; border: 0; border-top: 1px solid #d3d6da; margin-bottom: 30px; }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; 
+            background-color: #ffffff; color: var(--black); margin: 0; 
+            height: 100vh; overflow: hidden;
+        }
+
+        h1 { margin: 10px 0 5px 0; letter-spacing: 1px; font-size: 1.8rem; }
+        hr { width: 100%; border: 0; border-top: 1px solid var(--border); margin-bottom: 20px; }
         
-        #grid { display: grid; grid-template-rows: repeat(6, 1fr); grid-gap: 5px; }
+        /* Grid Game */
+        #game-container { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        #grid { display: grid; grid-template-rows: repeat(6, 1fr); grid-gap: 5px; margin-bottom: 20px; }
         .row { display: grid; grid-template-columns: repeat(5, 1fr); grid-gap: 5px; }
         
         .tile { 
-            width: 58px; height: 58px; border: 2px solid #d3d6da; 
+            width: 50px; height: 50px; border: 2px solid var(--border); 
             display: flex; align-items: center; justify-content: center; 
-            font-size: 2rem; font-weight: bold; text-transform: uppercase; 
-            transition: all 0.2s;
+            font-size: 1.5rem; font-weight: bold; text-transform: uppercase; 
         }
         
-        /* State Warna */
-        .correct { background-color: #6aaa64; border-color: #6aaa64; color: white; }
-        .present { background-color: #c9b458; border-color: #c9b458; color: white; }
-        .absent { background-color: #787c7e; border-color: #787c7e; color: white; }
+        .correct { background-color: var(--green); border-color: var(--green); color: white; }
+        .present { background-color: var(--yellow); border-color: var(--yellow); color: white; }
+        .absent { background-color: var(--gray); border-color: var(--gray); color: white; }
         .tapped { border-color: #878a8c; color: black; }
 
-        #message { margin-top: 30px; font-weight: bold; font-size: 1.2rem; min-height: 1.5rem; }
-        .btn-reset { margin-top: 15px; padding: 10px 20px; cursor: pointer; border: none; background: #333; color: white; border-radius: 5px; }
+        /* Virtual Keyboard */
+        #keyboard { width: 100%; max-width: 500px; padding: 10px; box-sizing: border-box; }
+        .kb-row { display: flex; justify-content: center; margin-bottom: 8px; touch-action: manipulation; }
+        .key { 
+            background-color: #d3d6da; border: 0; border-radius: 4px; 
+            margin: 0 3px; padding: 0; height: 58px; flex: 1;
+            font-weight: bold; cursor: pointer; display: flex; align-items: center; 
+            justify-content: center; text-transform: uppercase; -webkit-tap-highlight-color: transparent;
+        }
+        .key.large { flex: 1.5; font-size: 0.8rem; }
+
+        #message { font-weight: bold; text-align: center; height: 20px; margin-bottom: 10px; }
+        .btn-reset { padding: 8px 15px; cursor: pointer; border: none; background: var(--black); color: white; border-radius: 4px; margin-bottom: 10px; }
+
+        @media (max-width: 380px) {
+            .tile { width: 45px; height: 45px; font-size: 1.2rem; }
+            .key { height: 50px; margin: 0 2px; }
+        }
     </style>
 </head>
 <body>
 
     <h1>RUMAH KATA</h1>
     <hr>
-    <div id="grid"></div>
-    <p id="message"></p>
-    <button class="btn-reset" onclick="location.reload()">Main Lagi</button>
+    
+    <div id="game-container">
+        <div id="grid"></div>
+        <p id="message"></p>
+        <div style="text-align: center;">
+            <button id="reset-btn" class="btn-reset" style="display:none" onclick="location.reload()">Main Lagi</button>
+        </div>
+    </div>
+
+    <div id="keyboard">
+        <div class="kb-row">
+            <button class="key" data-key="Q">Q</button><button class="key" data-key="W">W</button>
+            <button class="key" data-key="E">E</button><button class="key" data-key="R">R</button>
+            <button class="key" data-key="T">T</button><button class="key" data-key="Y">Y</button>
+            <button class="key" data-key="U">U</button><button class="key" data-key="I">I</button>
+            <button class="key" data-key="O">O</button><button class="key" data-key="P">P</button>
+        </div>
+        <div class="kb-row">
+            <button class="key" data-key="A">A</button><button class="key" data-key="S">S</button>
+            <button class="key" data-key="D">D</button><button class="key" data-key="F">F</button>
+            <button class="key" data-key="G">G</button><button class="key" data-key="H">H</button>
+            <button class="key" data-key="J">J</button><button class="key" data-key="K">K</button>
+            <button class="key" data-key="L">L</button>
+        </div>
+        <div class="kb-row">
+            <button class="key large" data-key="ENTER">ENTER</button>
+            <button class="key" data-key="Z">Z</button><button class="key" data-key="X">X</button>
+            <button class="key" data-key="C">C</button><button class="key" data-key="V">V</button>
+            <button class="key" data-key="B">B</button><button class="key" data-key="N">N</button>
+            <button class="key" data-key="M">M</button>
+            <button class="key large" data-key="BACKSPACE">⌫</button>
+        </div>
+    </div>
 
     <script>
         const WORD_LIST = ["INDAH", "KAHIM", "KEREN", "SEKRE", "RUMAH"];
@@ -64,19 +120,27 @@
             grid.appendChild(row);
         }
 
-        document.addEventListener('keydown', (e) => {
+        // Event Listener Keyboard Fisik
+        document.addEventListener('keydown', (e) => handleInput(e.key.toUpperCase()));
+
+        // Event Listener Keyboard Virtual
+        document.querySelectorAll('.key').forEach(button => {
+            button.addEventListener('click', () => handleInput(button.dataset.key));
+        });
+
+        function handleInput(key) {
             if (isGameOver) return;
 
-            if (e.key === 'Enter') {
+            if (key === 'ENTER') {
                 if (currentGuess.length === 5) checkGuess();
-            } else if (e.key === 'Backspace') {
+            } else if (key === 'BACKSPACE' || key === 'BACK') {
                 currentGuess = currentGuess.slice(0, -1);
                 updateGrid();
-            } else if (currentGuess.length < 5 && /^[a-zA-Z]$/.test(e.key)) {
-                currentGuess += e.key.toUpperCase();
+            } else if (currentGuess.length < 5 && /^[A-Z]$/.test(key)) {
+                currentGuess += key;
                 updateGrid();
             }
-        });
+        }
 
         function updateGrid() {
             for (let i = 0; i < 5; i++) {
@@ -96,7 +160,6 @@
             let guessArr = currentGuess.split('');
             let statuses = new Array(5).fill('absent');
 
-            // Cek Huruf Benar (Hijau)
             guessArr.forEach((char, i) => {
                 if (char === ANSWER[i]) {
                     statuses[i] = 'correct';
@@ -104,7 +167,6 @@
                 }
             });
 
-            // Cek Huruf Ada tapi Salah Posisi (Kuning)
             guessArr.forEach((char, i) => {
                 if (statuses[i] !== 'correct' && tempAnswer.includes(char)) {
                     statuses[i] = 'present';
@@ -112,22 +174,48 @@
                 }
             });
 
-            // Terapkan Class Warna
             statuses.forEach((status, i) => {
                 rowTiles[i].classList.add(status);
+                // Update warna keyboard virtual
+                updateKeyColor(guessArr[i], status);
             });
 
             if (currentGuess === ANSWER) {
-                document.getElementById('message').innerText = "Indah banget! Selamat, kamu berhasil menebak kata!";
-                isGameOver = true;
+                showMessage("Indah banget! Selamat, kamu berhasil menebak kata!");
+                endGame();
             } else {
                 currentAttempt++;
                 currentGuess = "";
                 if (currentAttempt === MAX_ATTEMPTS) {
-                    document.getElementById('message').innerText = `Hey, it's okay! Refresh dan main lagi ya. Tadi jawabannya: ${ANSWER}`;
-                    isGameOver = true;
+                    showMessage(`Hey, it's okay! Refresh dan main lagi ya. Tadi jawabannya: ${ANSWER}`);
+                    endGame();
                 }
             }
+        }
+
+        function updateKeyColor(char, status) {
+            const keyBtn = document.querySelector(`.key[data-key="${char}"]`);
+            if (!keyBtn) return;
+            
+            if (status === 'correct') {
+                keyBtn.style.backgroundColor = 'var(--green)';
+                keyBtn.style.color = 'white';
+            } else if (status === 'present' && !keyBtn.classList.contains('correct')) {
+                keyBtn.style.backgroundColor = 'var(--yellow)';
+                keyBtn.style.color = 'white';
+            } else if (status === 'absent' && !keyBtn.classList.contains('correct') && !keyBtn.classList.contains('present')) {
+                keyBtn.style.backgroundColor = 'var(--gray)';
+                keyBtn.style.color = 'white';
+            }
+        }
+
+        function showMessage(msg) {
+            document.getElementById('message').innerText = msg;
+        }
+
+        function endGame() {
+            isGameOver = true;
+            document.getElementById('reset-btn').style.display = 'inline-block';
         }
     </script>
 </body>
