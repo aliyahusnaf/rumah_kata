@@ -25,8 +25,16 @@
         
         /* Input tersembunyi agar keyboard muncul */
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
-        #message { margin-top: 20px; font-weight: bold; min-height: 1.5rem; }
+        #message { margin-top: 20px; font-weight: bold; min-height: 1.5rem; text-align: center; }
         .btn { margin-top: 10px; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer; }
+
+        /* Styling GIF agar rapi */
+        #result-gif {
+            display: none; 
+            margin-top: 15px;
+            max-width: 250px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body onclick="focusInput()">
@@ -37,12 +45,18 @@
 
     <div id="grid"></div>
     <p id="message"></p>
+
+    <img id="result-gif" src="" alt="Hasil Game">
+
     <button class="btn" onclick="location.reload()">Main Lagi</button>
 
     <script>
-        const WORDS = ["INDAH", "KAHIM", "KEREN", "SEKRE", "RUMAH", "HAZEK", "BULAN", "ZHANG", "VHAMB", "IFSTI"];
+        const WORDS = ["INDAH", "KAHIM", "KEREN", "SEKRE", "RUMAH", "HAZEK", "BULAN", "ZHANG", "VHAMB", "IFSTI", "DEBAT", "BEHEL", "BULAN",
+            "JAHIM", "KAWIS", "KASUH", "TUBIS", 
+        ];
         const ANSWER = WORDS[Math.floor(Math.random() * WORDS.length)];
         const input = document.getElementById('hidden-input');
+        const gifImg = document.getElementById('result-gif');
         let currentAttempt = 0;
         let isGameOver = false;
 
@@ -108,11 +122,15 @@
 
             if (guess === ANSWER) {
                 document.getElementById('message').innerText = "Indah banget! Selamat, kamu berhasil menebak kata!";
+                gifImg.src = "menang.gif"; // Path file lokal menang
+                gifImg.style.display = "block";
                 isGameOver = true;
             } else {
                 currentAttempt++;
                 if (currentAttempt === 6) {
                     document.getElementById('message').innerText = `Hey, it's okay! Refresh dan main lagi ya. Tadi jawabannya: ${ANSWER}`;
+                    gifImg.src = "kalah.gif"; // Path file lokal kalah
+                    gifImg.style.display = "block";
                     isGameOver = true;
                 }
             }
